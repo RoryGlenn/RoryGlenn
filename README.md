@@ -1,6 +1,6 @@
 - 👋 Hi, I’m @RoryGlenn
 - 👀 I’m interested in Programming, Python, Data Science, Stocks, Cryptocurrency, Trading Bots, Trading Strategies, Backtesting.
-- 💞️ I’m looking to collaborate on trading strategies
+- 💞️ I’m looking to collaborate on python projects
 - 📫 How to reach me email: glennrory@gmail.com
 
 <!---
