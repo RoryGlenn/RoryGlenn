@@ -77,28 +77,20 @@ Tools:
 <td align="center" width="50%">
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=YoutubeClickBaitFilter&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" />
 <br/>
-<b>🎯 YouTube ClickBait Filter</b><br/>
-<sub>Smart content filtering Chrome extension</sub>
 </td>
 <td align="center" width="50%">
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=PriceProphet&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" />
 <br/>
-<b>� Profile Repository</b><br/>
-<sub>GitHub profile and documentation</sub>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=SnoopLog&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" />
 <br/>
-<b>� SnoopLog</b><br/>
-<sub>Advanced logging and monitoring tool</sub>
 </td>
 <td align="center" width="50%">
 <img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=RecessionDetection&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" />
 <br/>
-<b>📊 Recession Detection</b><br/>
-<sub>Economic indicator analysis system</sub>
 </td>
 </tr>
 </table>
