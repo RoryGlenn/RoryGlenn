@@ -73,21 +73,29 @@ Tools:
 <table>
 <tr>
 <td align="center" width="50%">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=YoutubeClickBaitFilter&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" />
+<a href="https://github.com/RoryGlenn/YoutubeClickBaitFilter" title="YoutubeClickBaitFilter Repository">
+  <img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=YoutubeClickBaitFilter&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" alt="YoutubeClickBaitFilter repo card" />
+</a>
 <br/>
 </td>
 <td align="center" width="50%">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=PriceProphet&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" />
+<a href="https://github.com/RoryGlenn/PriceProphet" title="PriceProphet Repository">
+  <img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=PriceProphet&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" alt="PriceProphet repo card" />
+</a>
 <br/>
 </td>
 </tr>
 <tr>
 <td align="center" width="50%">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=SnoopLog&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" />
+<a href="https://github.com/RoryGlenn/SnoopLog" title="SnoopLog Repository">
+  <img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=SnoopLog&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" alt="SnoopLog repo card" />
+</a>
 <br/>
 </td>
 <td align="center" width="50%">
-<img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=RecessionDetection&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" />
+<a href="https://github.com/RoryGlenn/RecessionDetection" title="RecessionDetection Repository">
+  <img src="https://github-readme-stats.vercel.app/api/pin/?username=RoryGlenn&repo=RecessionDetection&theme=tokyonight&border_color=00D9FF&title_color=00D9FF" alt="RecessionDetection repo card" />
+</a>
 <br/>
 </td>
 </tr>
