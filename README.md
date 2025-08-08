@@ -1,7 +1,7 @@
 <div align="center">
 
 # 🚀 Rory Glenn
-### *Software Engineer • Trading Strategist • Data Scientist*
+### *Software Engineer @ Bank of America • Trading Strategist • Data Scientist*
 
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=22&pause=1000&color=00D9FF&center=true&vCenter=true&width=600&lines=Building+Intelligent+Trading+Systems;Creating+Data-Driven+Solutions;Automating+Financial+Markets;Chrome+Extension+Developer)](https://git.io/typing-svg)
 
@@ -253,6 +253,8 @@ console.log("Always coding, always improving! 🚀");
 ![Profile Views](https://komarev.com/ghpvc/?username=RoryGlenn&color=00D9FF&style=for-the-badge&label=Profile+Views)
 [![GitHub followers](https://img.shields.io/github/followers/RoryGlenn?logo=GitHub&style=for-the-badge)](https://github.com/RoryGlenn)
 [![GitHub stars](https://img.shields.io/github/stars/RoryGlenn?logo=github&style=for-the-badge)](https://github.com/RoryGlenn)
+
+<sub><i>Opinions are my own and do not represent Bank of America.</i></sub>
 
 **⭐ If my work resonates with you, drop a star on my repos! ⭐**
 
