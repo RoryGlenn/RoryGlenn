@@ -5,7 +5,7 @@
 
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=22&pause=1000&color=00D9FF&center=true&vCenter=true&width=600&lines=Building+Intelligent+Trading+Systems;Creating+Data-Driven+Solutions;Automating+Financial+Markets;Chrome+Extension+Developer)](https://git.io/typing-svg)
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+<!-- <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"> -->
 
 </div>
 
@@ -248,7 +248,7 @@ console.log("Always coding, always improving! 🚀");
 
 ### 💭 *"In a world of random walks, we're just trying to make the stumbling look intentional"*
 
-<img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif">
+<!-- <img src="https://user-images.githubusercontent.com/73097560/115834477-dbab4500-a447-11eb-908a-139a6edaec5c.gif"> -->
 
 ![Profile Views](https://komarev.com/ghpvc/?username=RoryGlenn&color=00D9FF&style=for-the-badge&label=Profile+Views)
 [![GitHub followers](https://img.shields.io/github/followers/RoryGlenn?logo=GitHub&style=for-the-badge)](https://github.com/RoryGlenn)
