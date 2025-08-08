@@ -28,7 +28,7 @@ class RoryGlenn:
             "🔥": "Building trading algorithms",
             "📚": "Learning market dynamics", 
             "🎯": "Chrome extension published",
-            "�": "Always exploring new ideas"
+            "💡": "Always exploring new ideas"
         }
     
     def philosophy(self):
@@ -49,7 +49,7 @@ Languages:
   Databases: SQL, NoSQL
   
 Specialties:
-  - � Algorithmic Trading
+  - 💹 Algorithmic Trading
   - 🤖 Trading Bot Development  
   - 📊 Data Analysis & Visualization
   - 🌐 Chrome Extensions
@@ -103,10 +103,13 @@ Tools:
 
 <div align="center">
 
-<img width="49%" src="https://github-readme-stats.vercel.app/api?username=RoryGlenn&show_icons=true&theme=tokyonight&border_color=00D9FF&title_color=00D9FF&icon_color=00D9FF&text_color=FFFFFF&bg_color=0D1117" />
-<img width="49%" src="https://github-readme-streak-stats.herokuapp.com/?user=RoryGlenn&theme=tokyonight&border=00D9FF&ring=00D9FF&fire=00D9FF" />
+<img width="48%" src="https://github-readme-stats.vercel.app/api?username=RoryGlenn&show_icons=true&theme=tokyonight&border_color=00D9FF&title_color=00D9FF&icon_color=00D9FF&text_color=FFFFFF&bg_color=0D1117" />
+&nbsp;&nbsp;&nbsp;
+<img width="48%" src="https://github-readme-streak-stats.herokuapp.com/?user=RoryGlenn&theme=tokyonight&border=00D9FF&ring=00D9FF&fire=00D9FF" />
 
 </div>
+
+<br/>
 
 ### 🐍 Language Proficiency
 
@@ -116,7 +119,10 @@ Tools:
 
 </div>
 
-<table align="center">
+<br/>
+
+<div align="center">
+<table>
 <tr>
 <td align="center"><img src="https://img.shields.io/badge/Python-90%25-3776AB?style=flat-square&logo=python&logoColor=white" /></td>
 <td align="center"><img src="https://img.shields.io/badge/JavaScript-75%25-F7DF1E?style=flat-square&logo=javascript&logoColor=black" /></td>
@@ -128,6 +134,7 @@ Tools:
 <td align="center"><img src="https://img.shields.io/badge/Trading APIs-75%25-00D9FF?style=flat-square&logo=bitcoin&logoColor=white" /></td>
 </tr>
 </table>
+</div>
 
 ---
 
@@ -164,14 +171,14 @@ Tools:
 
 ## 🎯 Current Mission
 
-<div align="center">
+<div align="left">
 
 ```javascript
 const currentFocus = {
-    🔥 active: "Building next-gen trading algorithms",
-    📚 learning: "Advanced quantitative finance",
-    🚀 nextGoal: "Real-time portfolio optimization",
-    💭 vision: "Democratizing algorithmic trading"
+    active:   "🔥 Building next-gen trading algorithms",
+    learning: "📚 Advanced quantitative finance",
+    nextGoal: "🚀 Real-time portfolio optimization",
+    vision:   "💭 Democratizing algorithmic trading"
 };
 
 console.log("Always coding, always improving! 🚀");
@@ -186,9 +193,8 @@ console.log("Always coding, always improving! 🚀");
 <div align="center">
 
 [![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:glennrory@gmail.com)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/your-profile)
-[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white)](https://twitter.com/your-handle)
-[![Portfolio](https://img.shields.io/badge/Portfolio-FF5722?style=for-the-badge&logo=google-chrome&logoColor=white)](https://your-portfolio.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/roryglenn/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-FF5722?style=for-the-badge&logo=google-chrome&logoColor=white)](https://github.com/RoryGlenn)
 
 ### 🤝 Open to Collaboration On:
 
