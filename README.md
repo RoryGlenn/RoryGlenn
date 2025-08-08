@@ -109,41 +109,14 @@ Tools:
 
 <br/><br/>
 
-<!-- Dynamic consolidated metrics (generated via GitHub Action) -->
-<img width="94%" src="./github-metrics.svg" alt="GitHub Metrics" />
-
-<br/><br/>
-
-<!-- Trophy Board -->
-<img src="https://github-profile-trophy.vercel.app/?username=RoryGlenn&theme=onedark&column=7&margin-w=5&margin-h=5&no-frame=true&no-bg=true" alt="trophies" />
-
-<br/><br/>
-
 <!-- Activity Graph -->
 <img width="94%" src="https://github-readme-activity-graph.vercel.app/graph?username=RoryGlenn&theme=tokyo-night&bg_color=0D1117&color=00D9FF&line=00D9FF&point=FFFFFF&area=true" alt="activity graph" />
 
 <br/><br/>
 
-<!-- Contribution Snake (generated via workflow) -->
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/RoryGlenn/RoryGlenn/output/github-contribution-grid-snake-dark.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/RoryGlenn/RoryGlenn/output/github-contribution-grid-snake.svg" />
-  <img alt="github contribution snake" src="https://raw.githubusercontent.com/RoryGlenn/RoryGlenn/output/github-contribution-grid-snake.svg" />
-</picture>
+<!-- Contribution snake moved to dedicated section below -->
 
 </div>
-
-<details>
-<summary><b>ℹ️ What am I showing here?</b></summary>
-
-- Stats & Streak: Raw contribution & commit activity.
-- GitHub Metrics Card: Consolidated overview (LOC added, PRs, Issues, Stars, Followers, Achievements, Languages, Repos). Generated daily.
-- Trophy Board: Highlighted engagement / community milestones.
-- Activity Graph: Temporal density of commits (heat + trends).
-- Contribution Snake: Visual fun rendering of contribution grid evolution.
-
-<sub>All dynamic assets auto-refreshed by GitHub Actions. No manual maintenance required.</sub>
-</details>
 
 <br/>
 
@@ -224,7 +197,19 @@ console.log("Always coding, always improving! 🚀");
 
 ---
 
-## 🤝 Let's Connect & Collaborate!
+## � Contribution Fun
+
+<p align="center">
+  <sub>Contribution evolution</sub><br/>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/RoryGlenn/RoryGlenn/output/github-contribution-grid-snake-dark.svg" />
+    <img alt="Contribution snake" src="https://raw.githubusercontent.com/RoryGlenn/RoryGlenn/output/github-contribution-grid-snake.svg" width="95%" />
+  </picture>
+</p>
+
+---
+
+## �🤝 Let's Connect & Collaborate!
 
 <div align="center">
 
