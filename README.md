@@ -1,7 +1,7 @@
 <div align="center">
 
 # 🚀 Rory Glenn
-### *Software Engineer @ Bank of America
+### Software Engineer @ Bank of America
 
 [![Typing SVG](https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=22&pause=1000&color=00D9FF&center=true&vCenter=true&width=600&lines=Building+Intelligent+Trading+Systems;Creating+Data-Driven+Solutions;Automating+Financial+Markets;Chrome+Extension+Developer)](https://git.io/typing-svg)
 
