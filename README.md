@@ -2,7 +2,7 @@
 
 # Rory Glenn
 
-### Software engineer building developer tools, automation, and reliable systems.
+<p><strong>Software engineer building developer tools, automation, and reliable systems.</strong></p>
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/roryglenn/)
 [![Email](https://img.shields.io/badge/Email-Say%20hello-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:glennrory@gmail.com)
