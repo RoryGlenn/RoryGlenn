@@ -1,0 +1,22 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^mailto:"
+    },
+    {
+      "pattern": "^https://www.linkedin.com/"
+    },
+    {
+      "pattern": "^https://img.shields.io/"
+    },
+    {
+      "pattern": "^https://www.npmjs.com/"
+    },
+    {
+      "pattern": "^https://raw.githubusercontent.com/"
+    }
+  ],
+  "retryOn429": true,
+  "retryCount": 3,
+  "fallbackRetryDelay": "2s"
+}
