@@ -66,6 +66,16 @@ npm install -D commitment-issues
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-2088FF?style=flat-square&logo=githubactions&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=flat-square&logo=linux&logoColor=black)
 
+## 🐍 Contribution snake
+
+<p align="center">
+  <sub>Proof that even GitHub's green squares have natural predators.</sub><br />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/RoryGlenn/RoryGlenn/output/github-contribution-grid-snake-dark.svg" />
+    <img src="https://raw.githubusercontent.com/RoryGlenn/RoryGlenn/output/github-contribution-grid-snake.svg" alt="Animated snake eating Rory Glenn's GitHub contributions" width="95%" />
+  </picture>
+</p>
+
 ## Let's connect
 
 I'm especially interested in developer tools, automation, backend systems, and open-source infrastructure. If you're working on something in that neighborhood, feel free to [connect on LinkedIn](https://www.linkedin.com/in/roryglenn/) or [send me an email](mailto:glennrory@gmail.com).
