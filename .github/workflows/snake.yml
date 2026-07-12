@@ -2,29 +2,53 @@ name: Generate Contribution Snake
 
 on:
   schedule:
-    - cron: "0 4 * * *"  # Daily 04:00 UTC
+    - cron: "0 4 * * *" # Daily at 04:00 UTC
   workflow_dispatch:
   push:
+    branches:
+      - main
     paths:
-      - '.github/workflows/snake.yml'
+      - ".github/workflows/snake.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: contribution-snake
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    timeout-minutes: 10
 
-      - name: Generate Snake
-        uses: Platane/snk@v3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Generate snake SVGs
+        uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3.5.0
         with:
-          github_user_name: RoryGlenn
+          github_user_name: ${{ github.repository_owner }}
           outputs: |
             dist/github-contribution-grid-snake.svg
             dist/github-contribution-grid-snake-dark.svg?palette=github-dark
 
-      - name: Push Snake to output branch
-        uses: crazy-max/ghaction-github-pages@v4
+      - name: Validate generated SVGs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          for file in \
+            dist/github-contribution-grid-snake.svg \
+            dist/github-contribution-grid-snake-dark.svg
+          do
+            test -s "$file"
+            grep --quiet '<svg' "$file"
+          done
+
+      - name: Publish SVGs to output branch
+        uses: crazy-max/ghaction-github-pages@1d6ee9b181a81033a16bd707a1401afa978daab4 # v5.0.0
         with:
           target_branch: output
           build_dir: dist
