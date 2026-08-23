@@ -2,7 +2,7 @@
 
 # Rory Glenn
 
-<p><strong>Software engineer building developer tools, automation, and reliable systems.</strong></p>
+<p><strong>Software engineer building developer tools, governed automation, and private-first applications.</strong></p>
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat-square&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/roryglenn/)
 [![Email](https://img.shields.io/badge/Email-Say%20hello-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:glennrory@gmail.com)
@@ -11,43 +11,42 @@
 
 ## About me
 
-I'm a software engineer based in New York City. I like finding workflows that are slow, repetitive, or easy to get wrong—and turning them into tools that feel fast, safe, and obvious to use.
+I'm a software engineer based in New York City. I focus on workflows that are slow, repetitive, difficult to govern, or easy to get wrong—and turn them into tools that are fast, safe, and understandable.
 
 - 💼 Software Engineer at Bank of America
 - 🧰 Most often working in Python and TypeScript/Node.js
-- 🔭 Focused on developer experience, CLI tooling, backend systems, and CI/release engineering
+- 🔭 Focused on developer experience, backend systems, automation, CI/release engineering, and applied AI
 - 🌱 Contributing to CPython, OpenTelemetry Collector, and Stripe CLI
 
-## Currently building: [commitment-issues](https://github.com/RoryGlenn/commitment-issues)
+## Current flagship projects
+
+| Project | What it does |
+| --- | --- |
+| [MasterAgent](https://github.com/RoryGlenn/MasterAgent) | Governed automation across developer and enterprise systems with explicit authority, verification, and audit boundaries. |
+| [LineLight](https://github.com/RoryGlenn/LineLight) | Private-first reading with synchronized highlighting, offline narration, PDFs, and audiobook workflows. |
+| [commitment-issues](https://github.com/RoryGlenn/commitment-issues) | Advisory Git guardrails that catch expensive mistakes before commits and pushes. |
+
+### commitment-issues
 
 [![npm version](https://img.shields.io/npm/v/commitment-issues.svg)](https://www.npmjs.com/package/commitment-issues)
 [![CI](https://github.com/RoryGlenn/commitment-issues/actions/workflows/ci.yml/badge.svg)](https://github.com/RoryGlenn/commitment-issues/actions/workflows/ci.yml)
-[![Coverage: 100%](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/RoryGlenn/commitment-issues/blob/main/docs/branch-coverage.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/RoryGlenn/commitment-issues/blob/main/LICENSE)
-
-**Advisory-first Git guardrails for JavaScript and TypeScript projects.** It catches lint, formatting, secret, missing-test, branch, commit-shape, and related-test problems before commits and pushes—without blocking or rewriting work unless a project opts in.
-
-<p align="center">
-  <a href="https://github.com/RoryGlenn/commitment-issues">
-    <img src="https://raw.githubusercontent.com/RoryGlenn/commitment-issues/main/assets/demo.gif" alt="commitment-issues catching a problem during a normal Git workflow and suggesting a safe fix" width="800" />
-  </a>
-</p>
 
 ```bash
 npm install -D commitment-issues
 ```
 
-[See the project](https://github.com/RoryGlenn/commitment-issues) · [Read the quickstart](https://github.com/RoryGlenn/commitment-issues#quickstart) · [View on npm](https://www.npmjs.com/package/commitment-issues)
+## Selected completed work
 
-## Selected work
-
-| Project | What it does |
+| Project | What it demonstrates |
 | --- | --- |
-| [YouTube ClickBait Filter](https://github.com/RoryGlenn/YoutubeClickBaitFilter) | Privacy-first Chrome extension that filters clickbait and high-noise YouTube content locally. |
-| [SnoopLog](https://github.com/RoryGlenn/SnoopLog) | Python instrumentation for tracing calls, timing, return values, exceptions, and caller context. |
-| [Price Prophet](https://github.com/RoryGlenn/PriceProphet) | React and TypeScript market-prediction game powered by simulated OHLC data. |
+| [Price Prophet](https://github.com/RoryGlenn/PriceProphet) | React, TypeScript, market-data simulation, and a deployed GitHub Pages experience. |
+| [YouTube ClickBait Filter](https://github.com/RoryGlenn/YoutubeClickBaitFilter) | A privacy-first Chrome extension with local content filtering. |
+| [SnoopLog](https://github.com/RoryGlenn/SnoopLog) | Python decorators and runtime instrumentation for debugging and observability. |
+| [Google Jobs Scraper](https://github.com/RoryGlenn/Google-Jobs-Scraper) | Python automation, data collection, and job-market analysis. |
+| [Recession Detection](https://github.com/RoryGlenn/RecessionDetection) | Time-series analysis and economic regime detection. |
 
-## Recent open-source work
+## Open-source contributions
 
 - [CPython pull requests](https://github.com/python/cpython/pulls?q=is%3Apr+author%3ARoryGlenn)
 - [OpenTelemetry Collector pull requests](https://github.com/open-telemetry/opentelemetry-collector/pulls?q=is%3Apr+author%3ARoryGlenn)
@@ -78,7 +77,7 @@ npm install -D commitment-issues
 
 ## Let's connect
 
-I'm especially interested in developer tools, automation, backend systems, and open-source infrastructure. If you're working on something in that neighborhood, feel free to [connect on LinkedIn](https://www.linkedin.com/in/roryglenn/) or [send me an email](mailto:glennrory@gmail.com).
+I'm especially interested in developer tools, automation, backend systems, applied AI, and open-source infrastructure. [Connect on LinkedIn](https://www.linkedin.com/in/roryglenn/) or [send me an email](mailto:glennrory@gmail.com).
 
 <div align="center">
   <sub>Opinions are my own and do not represent Bank of America.</sub>
