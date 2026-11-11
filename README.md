@@ -32,9 +32,21 @@ I'm a software engineer based in New York City. I focus on workflows that are sl
 [![CI](https://github.com/RoryGlenn/commitment-issues/actions/workflows/ci.yml/badge.svg)](https://github.com/RoryGlenn/commitment-issues/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/RoryGlenn/commitment-issues/blob/main/LICENSE)
 
+Advisory Git guardrails for JavaScript and TypeScript. Catch lint and formatting
+problems before the first push, then run an explicit fix when the repository
+state is safe. Local and telemetry-free; CI remains authoritative.
+
+[![Commitment Issues demo showing advisory feedback and an explicit safe fix](https://raw.githubusercontent.com/RoryGlenn/commitment-issues/main/assets/demo.gif)](https://github.com/RoryGlenn/commitment-issues#quickstart)
+
+Preview setup in your project:
+
 ```bash
-npm install -D commitment-issues
+npm install -D commitment-issues eslint@^9 prettier@^3
+npx --no-install commitment-issues init --dry-run
 ```
+
+[Quickstart](https://github.com/RoryGlenn/commitment-issues#quickstart) ·
+[Try it in a disposable repository](https://github.com/RoryGlenn/commitment-issues/blob/main/docs/try-it-safely.md)
 
 ## Selected completed work
 
