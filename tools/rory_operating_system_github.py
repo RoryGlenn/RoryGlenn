@@ -230,8 +230,10 @@ def preflight(gh: Gh, owner: str) -> None:
         raise ProjectError(f"GitHub user {owner!r} was not found.")
 
 
-def ensure_project(gh: Gh, owner: str) -> ProjectInfo:
-    """Create or reuse the exact private user-level project."""
+def _project_for_owner(
+    gh: Gh, owner: str
+) -> tuple[str, dict[str, Any] | None]:
+    """Read the owner ID and the project with the exact expected title."""
 
     data = gh.graphql(ACCOUNT_QUERY, {"login": owner})
     user = data.get("user")
@@ -248,16 +250,39 @@ def ensure_project(gh: Gh, owner: str) -> ProjectInfo:
     ]
     if len(matches) > 1:
         raise ProjectError(f"Multiple projects are named {TITLE!r}.")
-    created = not matches
+    return user["id"], matches[0] if matches else None
+
+
+def find_project(gh: Gh, owner: str) -> ProjectInfo:
+    """Resolve an existing project using read-only queries."""
+
+    _, project = _project_for_owner(gh, owner)
+    if project is None:
+        raise ProjectError(
+            f"Project {TITLE!r} was not found. "
+            "Run the bootstrap without --audit-only to create it."
+        )
+    return ProjectInfo(
+        id=str(project["id"]),
+        number=int(project["number"]),
+        url=str(project["url"]),
+        created=False,
+    )
+
+
+def ensure_project(gh: Gh, owner: str) -> ProjectInfo:
+    """Create or reuse the exact private user-level project."""
+
+    owner_id, project = _project_for_owner(gh, owner)
+    created = project is None
     if created:
         result = gh.graphql(
             CREATE_PROJECT,
-            {"input": {"ownerId": user["id"], "title": TITLE}},
+            {"input": {"ownerId": owner_id, "title": TITLE}},
         )
         project = result.get("createProjectV2", {}).get("projectV2")
         print(f"[create] {TITLE}")
     else:
-        project = matches[0]
         print(f"[reuse] {TITLE}")
     if not isinstance(project, dict) or not isinstance(project.get("id"), str):
         raise ProjectError("Could not resolve the project after creation.")
@@ -270,7 +295,6 @@ def ensure_project(gh: Gh, owner: str) -> ProjectInfo:
                 "shortDescription": DESCRIPTION,
                 "readme": README,
                 "public": False,
-                "closed": False,
             }
         },
     ).get("updateProjectV2", {}).get("projectV2")

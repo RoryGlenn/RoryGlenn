@@ -54,8 +54,8 @@ in the appropriate validation or blocked views.
 ## Run once
 
 The GitHub CLI must be authenticated as `RoryGlenn` with the `project` OAuth
-scope. The script uses Python's standard library and the official `gh project`
-and `gh api` commands.
+scope. The script uses Python's standard library and GraphQL through the
+official `gh api` command, resolving project, item, field, and option IDs.
 
 ### macOS
 
@@ -99,15 +99,20 @@ Reapply the initial metadata to the seven seeded MasterAgent issues:
 python3 tools/bootstrap_rory_operating_system.py --refresh-seed
 ```
 
-Check the current three-item WIP limit:
+Check the current three-item WIP limit using read-only queries. The audit
+requires an existing project and accepts the `read:project` OAuth scope.
 
 ```bash
 python3 tools/bootstrap_rory_operating_system.py --audit-only
 ```
 
+A successful audit prints `[ok] WIP <count>/3`. It exits with status 2 if the
+project is missing, the project name is ambiguous, or more than three items are
+In Progress. Create a missing project with the default bootstrap command above.
+
 ## Safety boundaries
 
-- The project remains private.
+- Bootstrap reconciliation sets the project to private.
 - The script does not modify issue bodies, labels, milestones, assignees,
   repository files, branches, or pull requests.
 - A project field with the expected name is reused rather than replaced.
