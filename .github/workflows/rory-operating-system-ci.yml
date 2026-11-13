@@ -4,12 +4,18 @@ on:
   pull_request:
     paths:
       - "tools/bootstrap_rory_operating_system.py"
+      - "tools/rory_operating_system_data.py"
+      - "tools/rory_operating_system_github.py"
+      - "tests/test_rory_operating_system.py"
       - ".github/workflows/rory-operating-system-ci.yml"
   push:
     branches:
       - main
     paths:
       - "tools/bootstrap_rory_operating_system.py"
+      - "tools/rory_operating_system_data.py"
+      - "tools/rory_operating_system_github.py"
+      - "tests/test_rory_operating_system.py"
       - ".github/workflows/rory-operating-system-ci.yml"
   workflow_dispatch:
 
@@ -36,7 +42,15 @@ jobs:
           python-version: "3.13"
 
       - name: Compile bootstrap
-        run: python -m py_compile tools/bootstrap_rory_operating_system.py
+        run: |
+          python -m py_compile \
+            tools/bootstrap_rory_operating_system.py \
+            tools/rory_operating_system_data.py \
+            tools/rory_operating_system_github.py \
+            tests/test_rory_operating_system.py
 
       - name: Validate static GraphQL documents
         run: python tools/bootstrap_rory_operating_system.py --self-check
+
+      - name: Test bootstrap with local GitHub fixtures
+        run: python -m unittest discover -s tests -v
