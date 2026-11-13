@@ -13,6 +13,9 @@ CLI, and `--audit-only` reconciles project metadata before checking WIP.
   error when the project is absent or ambiguous.
 - Cover bootstrap, reconciliation, seed refresh, and audit through mocked GitHub
   CLI calls, and clarify the audit command in the runbook.
+- Reconcile current main through a merge, retaining its offline self-check,
+  custom project title, seed-skipping option, missing-field population,
+  normalized option matching, and active-item output.
 
 ## Capabilities
 

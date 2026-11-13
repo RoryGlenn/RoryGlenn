@@ -80,6 +80,7 @@ class FixtureGitHub:
             "content": {
                 "id": f"I_fixture_{number}",
                 "url": f"https://github.com/RoryGlenn/MasterAgent/issues/{number}",
+                "title": f"Fixture issue {number}",
                 "number": number,
                 "repository": {"nameWithOwner": "RoryGlenn/MasterAgent"},
             },
@@ -113,6 +114,7 @@ class FixtureGitHub:
                 "user": {"id": "U_fixture", "projectsV2": {"nodes": self.projects}},
             }
         if query == github.CREATE_PROJECT:
+            self.project["title"] = variables["input"]["title"]
             self.projects.append(self.project)
             return {"createProjectV2": {"projectV2": self.project}}
         if query == github.UPDATE_PROJECT:
@@ -173,17 +175,23 @@ class FixtureGitHub:
                 field for field in self.fields.values()
                 if field["id"] == value["fieldId"]
             )
-            if field["name"] == "Status":
+            encoded = value["value"]
+            if "singleSelectOptionId" in encoded:
                 option = next(
                     option for option in field["options"]
-                    if option["id"] == value["value"]["singleSelectOptionId"]
+                    if option["id"] == encoded["singleSelectOptionId"]
                 )
-                item = next(
-                    item for item in self.items if item["id"] == value["itemId"]
-                )
-                item["fieldValues"]["nodes"] = [
-                    {"name": option["name"], "field": field}
-                ]
+                stored = {"name": option["name"], "optionId": option["id"]}
+            else:
+                stored = encoded
+            item = next(
+                item for item in self.items if item["id"] == value["itemId"]
+            )
+            item["fieldValues"]["nodes"] = [
+                node for node in item["fieldValues"]["nodes"]
+                if node["field"]["id"] != field["id"]
+            ]
+            item["fieldValues"]["nodes"].append({**stored, "field": field})
             return {
                 "updateProjectV2ItemFieldValue": {
                     "projectV2Item": {"id": value["itemId"]}
@@ -229,7 +237,8 @@ class BootstrapTests(unittest.TestCase):
         result, output = fixture.run_main([])
 
         self.assertEqual(result, 0)
-        self.assertIn(f"[done] WIP 3/3: {fixture.project['url']}", output)
+        self.assertIn("[ok] WIP limit: 3/3", output)
+        self.assertTrue(output.endswith(fixture.project["url"] + "\n"))
         self.assertEqual(len(fixture.inputs_for(github.CREATE_PROJECT)), 1)
         self.assertEqual(
             len(fixture.inputs_for(github.CREATE_FIELD)), len(model.FIELDS)
@@ -273,23 +282,113 @@ class BootstrapTests(unittest.TestCase):
             self.assertEqual(value["projectId"], fixture.project["id"])
 
     def test_existing_project_keeps_seed_metadata_until_explicit_refresh(self):
-        fixture = FixtureGitHub()
-        fixture.add_item(171, "In progress")
-        fixture.values[("PVTI_fixture_171", fixture.fields["Outcome"]["id"])] = {
-            "text": "User-edited outcome"
-        }
+        fixture = FixtureGitHub(existing=False)
+        fixture.run_main([])
+        for name, value in (
+            ("Outcome", {"text": "User-edited outcome"}),
+            ("Review date", {"date": "2030-01-01"}),
+            ("Status", {"singleSelectOptionId": "status_done"}),
+        ):
+            fixture.respond(github.UPDATE_ITEM_FIELD, {"input": {
+                "itemId": "PVTI_fixture_171",
+                "fieldId": fixture.fields[name]["id"],
+                "value": value,
+            }})
         original_items = copy.deepcopy(fixture.items)
         original_values = copy.deepcopy(fixture.values)
+        fixture.operations.clear()
 
         result, output = fixture.run_main([])
 
         self.assertEqual(result, 0)
-        self.assertIn("[skip] seed metadata already exists", output)
+        self.assertIn("[ok] WIP limit: 2/3", output)
         self.assertEqual(fixture.items, original_items)
         self.assertEqual(fixture.values, original_values)
         self.assertEqual(fixture.inputs_for(github.ADD_ITEM), [])
         self.assertEqual(fixture.inputs_for(github.UPDATE_ITEM_FIELD), [])
         self.assertEqual(fixture.inputs_for(github.CREATE_PROJECT), [])
+        self.assertIn("... on ProjectV2ItemFieldTextValue", github.ITEMS_QUERY)
+        self.assertIn("... on ProjectV2ItemFieldDateValue", github.ITEMS_QUERY)
+
+    def test_default_reconcile_fills_only_empty_seed_fields(self):
+        fixture = FixtureGitHub()
+        item = fixture.add_item(171, "In progress")
+        for name, value in (
+            ("Outcome", {"text": "User-edited outcome"}),
+            ("Review date", {"date": "2030-01-01"}),
+            ("Next validation", {"text": ""}),
+        ):
+            fixture.respond(github.UPDATE_ITEM_FIELD, {"input": {
+                "itemId": item["id"],
+                "fieldId": fixture.fields[name]["id"],
+                "value": value,
+            }})
+
+        result, _ = fixture.run_main([])
+
+        self.assertEqual(result, 0)
+        self.assertEqual(len(fixture.inputs_for(github.ADD_ITEM)), 6)
+        stored = github.item_values(item)
+        self.assertEqual(stored["Outcome"], "User-edited outcome")
+        self.assertEqual(stored["Review date"], "2030-01-01")
+        self.assertEqual(stored["Status"], "In progress")
+        self.assertEqual(stored["Next validation"], model.SEEDS[0].validation)
+        preserved_ids = {
+            fixture.fields[name]["id"]
+            for name in ("Status", "Outcome", "Review date")
+        }
+        for update in fixture.inputs_for(github.UPDATE_ITEM_FIELD):
+            if update["itemId"] == item["id"]:
+                self.assertNotIn(update["fieldId"], preserved_ids)
+
+    def test_no_seed_reconciles_structure_without_item_mutations(self):
+        fixture = FixtureGitHub(existing=False)
+
+        result, output = fixture.run_main(["--no-seed", "--refresh-seed"])
+
+        self.assertEqual(result, 0)
+        self.assertIn("[ok] WIP limit: 0/3", output)
+        self.assertEqual(len(fixture.fields), len(model.FIELDS) + 2)
+        self.assertEqual(len(fixture.views), len(model.VIEWS))
+        self.assertEqual(fixture.items, [])
+        self.assertEqual(fixture.inputs_for(github.ADD_ITEM), [])
+        self.assertEqual(fixture.inputs_for(github.UPDATE_ITEM_FIELD), [])
+
+    def test_custom_project_title_is_used_for_creation_and_audit(self):
+        fixture = FixtureGitHub(existing=False)
+        title = "Fixture planning board"
+
+        result, _ = fixture.run_main(["--title", title, "--no-seed"])
+
+        self.assertEqual(result, 0)
+        self.assertEqual(fixture.project["title"], title)
+        self.assertEqual(fixture.inputs_for(github.CREATE_PROJECT)[0]["title"], title)
+        self.assertEqual(fixture.inputs_for(github.UPDATE_PROJECT)[0]["title"], title)
+        fixture.operations.clear()
+
+        result, output = fixture.run_main(["--title", title, "--audit-only"])
+
+        self.assertEqual(result, 0)
+        self.assertIn("[ok] WIP limit: 0/3", output)
+        self.assertTrue(all(
+            query.lstrip().startswith("query") for query, _ in fixture.operations
+        ))
+
+    def test_option_matching_normalizes_case_and_repeated_whitespace(self):
+        fixture = FixtureGitHub()
+        fixture.fields["Status"]["options"][1]["name"] = "  In   PROGRESS "
+        for option in fixture.fields["Stage"]["options"]:
+            if option["name"] == "Build":
+                option["name"] = "  bUiLd "
+
+        result, output = fixture.run_main(["--refresh-seed"])
+
+        self.assertEqual(result, 0)
+        self.assertIn("[ok] WIP limit: 3/3", output)
+        self.assertEqual(
+            fixture.values[("PVTI_fixture_171", fixture.fields["Status"]["id"])],
+            {"singleSelectOptionId": "status_active"},
+        )
 
     def test_existing_closed_project_stays_closed_during_reconciliation(self):
         fixture = FixtureGitHub()
@@ -310,7 +409,7 @@ class BootstrapTests(unittest.TestCase):
         result, output = fixture.run_main(["--refresh-seed"])
 
         self.assertEqual(result, 0)
-        self.assertIn("WIP 3/3", output)
+        self.assertIn("WIP limit: 3/3", output)
         self.assertEqual(fixture.inputs_for(github.ADD_ITEM), [])
         updates = fixture.inputs_for(github.UPDATE_ITEM_FIELD)
         self.assertEqual({update["itemId"] for update in updates}, existing_ids)
@@ -357,7 +456,12 @@ class AuditTests(unittest.TestCase):
                 result, output = fixture.run_main(["--audit-only", "--refresh-seed"])
 
                 self.assertEqual(result, 0)
-                self.assertEqual(output, f"[ok] WIP {active_count}/3\n")
+                expected = f"[ok] WIP limit: {active_count}/3\n"
+                expected += "".join(
+                    f"  - Fixture issue {number}\n" for number in range(active_count)
+                )
+                expected += fixture.project["url"] + "\n"
+                self.assertEqual(output, expected)
                 self.assertEqual(
                     (fixture.project, fixture.items, fixture.fields, fixture.views),
                     original,
@@ -398,9 +502,26 @@ class AuditTests(unittest.TestCase):
         self.assertEqual(cursors, [None, "2"])
         self.assert_read_only(fixture)
 
+    def test_audit_reports_titles_of_active_pull_requests_and_drafts(self):
+        fixture = FixtureGitHub()
+        pull_request = fixture.add_item(1, "In progress")
+        pull_request["content"] = {
+            "title": "Fixture pull request",
+            "url": "https://github.com/RoryGlenn/MasterAgent/pull/1",
+        }
+        draft = fixture.add_item(2, "In progress")
+        draft["content"] = {"title": "Fixture draft"}
+
+        result, output = fixture.run_main(["--audit-only"])
+
+        self.assertEqual(result, 0)
+        self.assertIn("  - Fixture pull request\n  - Fixture draft\n", output)
+        self.assertTrue(output.endswith(fixture.project["url"] + "\n"))
+        self.assert_read_only(fixture)
+
     def test_documented_script_audit_exit_status_and_read_only_commands(self):
         for scenario, expected_status, expected_message in (
-            ("existing", 0, "[ok] WIP 0/3"),
+            ("existing", 0, "[ok] WIP limit: 0/3"),
             ("missing", 2, "was not found"),
             ("over_limit", 2, "WIP limit violated: 4"),
         ):
@@ -482,6 +603,67 @@ class AuditTests(unittest.TestCase):
                     self.assertTrue(
                         call["payload"]["query"].lstrip().startswith("query")
                     )
+
+
+class SelfCheckTests(unittest.TestCase):
+    def test_self_check_runs_before_github_cli_initialization(self):
+        output = io.StringIO()
+        with (
+            patch.object(bootstrap, "Gh", side_effect=AssertionError("GitHub access")),
+            contextlib.redirect_stdout(output),
+        ):
+            result = bootstrap.main(["--self-check"])
+
+        self.assertEqual(result, 0)
+        self.assertEqual(
+            output.getvalue(),
+            f"[ok] validated {len(github.GRAPHQL_DOCUMENTS)} GraphQL documents\n",
+        )
+
+    def test_invalid_static_documents_fail_before_github_access(self):
+        for document in (
+            "query { viewer { login }",
+            "query { viewer(login: ] ) { login } }",
+            'query { viewer(login: "unterminated) { login } }',
+        ):
+            with (
+                self.subTest(document=document),
+                patch.object(bootstrap, "GRAPHQL_DOCUMENTS", (document,)),
+                patch.object(
+                    bootstrap, "Gh", side_effect=AssertionError("GitHub access")
+                ),
+                self.assertRaises(bootstrap.BootstrapError),
+            ):
+                bootstrap.main([])
+
+    def test_document_validation_ignores_strings_and_comments(self):
+        document = (
+            r'query { viewer(name: "braces \" } [") { login } # }' + "\n}"
+        )
+        with patch.object(bootstrap, "GRAPHQL_DOCUMENTS", (document,)):
+            bootstrap.validate_graphql_documents()
+
+    def test_documented_self_check_succeeds_without_github_cli(self):
+        with tempfile.TemporaryDirectory() as directory:
+            process = subprocess.run(
+                [
+                    sys.executable,
+                    "-B",
+                    "tools/bootstrap_rory_operating_system.py",
+                    "--self-check",
+                ],
+                cwd=ROOT,
+                env={**os.environ, "PATH": directory},
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+        self.assertEqual(process.returncode, 0, process.stderr)
+        self.assertIn(
+            f"[ok] validated {len(github.GRAPHQL_DOCUMENTS)} GraphQL documents",
+            process.stdout,
+        )
 
 
 if __name__ == "__main__":

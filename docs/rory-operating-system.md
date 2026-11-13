@@ -1,121 +1,100 @@
 # Rory Operating System
 
-`tools/bootstrap_rory_operating_system.py` creates a private, user-level GitHub
-Project that coordinates work across repositories. It limits active work,
-requires a falsifiable next validation, and separates technical completion from
-observed user impact.
+`tools/bootstrap_rory_operating_system.py` creates and maintains a private,
+personal GitHub Project named **Rory Operating System**.
 
-## Result
+The project limits active work to three outcomes and makes validation evidence
+visible across repositories. Rerunning the bootstrap reuses the project,
+fields, views, and seeded issues.
 
-The bootstrap creates or reuses a project named **Rory Operating System**.
+## What it creates
 
 ### Fields
 
-| Field | Type | Values or purpose |
-| --- | --- | --- |
-| Outcome | Text | User or organizational result, not implementation output |
-| Project | Single select | MasterAgent, LineLight, commitment-issues, BranchBeacon, Other |
-| Stage | Single select | Diagnose, Build, Validate, Ship, Measure, Maintain, Kill |
-| Evidence level | Single select | Idea, Mocked, Integrated, Real environment, Real user |
-| Next validation | Text | Next observation that could prove the work wrong or incomplete |
-| User impact | Single select | None, Expected, Observed |
-| WIP owner | Text | Person responsible for moving the outcome |
-| Review date | Date | Non-binding reassessment date |
-| External dependency | Text | Human, permission, environment, account, or provider blocker |
+- `Outcome`
+- `Project`
+- `Stage`
+- `Evidence level`
+- `Next validation`
+- `User impact`
+- `WIP owner`
+- `Review date`
+- `External dependency`
 
 ### Views
 
-| View | Filter |
-| --- | --- |
-| Now | `status:"In Progress"` |
-| Validation required | `stage:Validate -evidence-level:"Real user" -status:Done` |
-| Externally blocked | `has:external-dependency -status:Done` |
-| Maintenance | `stage:Maintain -status:Done` |
-| Kill candidates | `stage:Kill -status:Done` |
+- **Now** — items whose Status is `In Progress`
+- **Validation required** — validation-stage work without real-user evidence
+- **Externally blocked** — open work with an external dependency
+- **Maintenance** — active maintenance work
+- **Kill candidates** — active work explicitly marked for removal or shutdown
 
-The script fails when more than three items have `Status = In Progress`.
+### Initial work-in-progress set
 
-### Initial work
+The script seeds these MasterAgent issues.
 
-A newly created project is seeded with the MasterAgent work required to prove one
-useful employee workflow rather than continue expanding raw capability count:
+- `#171`, `#164`, and `#170` as the three active outcomes
+- `#172`, `#94`, `#112`, and `#106` as queued validation or dependency work
 
-- `RoryGlenn/MasterAgent#171` — define Tier-1 workflows
-- `RoryGlenn/MasterAgent#164` — instrument performance and governance overhead
-- `RoryGlenn/MasterAgent#170` — bind connector implementation identity
-- `RoryGlenn/MasterAgent#172` — managed-workstation pilot
-- `RoryGlenn/MasterAgent#94` — protected provider fixtures and credentials
-- `RoryGlenn/MasterAgent#112` — corporate proxy and enterprise CA support
-- `RoryGlenn/MasterAgent#106` — Windows 11 certification
+Rerunning adds missing seed issues and fills empty configured fields. Populated
+values are preserved. Pass `--refresh-seed` to restore their configured project
+metadata intentionally.
 
-Exactly the first three enter **Now**. The remainder begin in **Todo** and appear
-in the appropriate validation or blocked views.
+## Run it
 
-## Run once
+### macOS or Ubuntu
 
-The GitHub CLI must be authenticated as `RoryGlenn` with the `project` OAuth
-scope. The script uses Python's standard library and GraphQL through the
-official `gh api` command, resolving project, item, field, and option IDs.
-
-### macOS
+Run from the repository root with Python 3 and an installed, authenticated GitHub
+CLI. Bootstrap requires the `project` OAuth scope and uses GraphQL through the
+official `gh api` command with resolved project, item, field, and option IDs.
 
 ```bash
-brew install gh
-gh auth login --hostname github.com --git-protocol https --web
-gh auth refresh --hostname github.com --scopes project
-
-git clone https://github.com/RoryGlenn/RoryGlenn.git
-cd RoryGlenn
+gh auth status
+gh auth refresh -s project
 python3 tools/bootstrap_rory_operating_system.py
 ```
 
-### Ubuntu 24.04
+The authenticated GitHub account must be `RoryGlenn` unless `--owner` is
+supplied explicitly. Reconciliation sets the project to private and preserves
+whether it is open or closed.
+
+## Check the script offline
+
+Validate the delimiters in all static GraphQL documents before account access.
 
 ```bash
-sudo apt update
-sudo apt install -y gh
-gh auth login --hostname github.com --git-protocol https --web
-gh auth refresh --hostname github.com --scopes project
-
-git clone https://github.com/RoryGlenn/RoryGlenn.git
-cd RoryGlenn
-python3 tools/bootstrap_rory_operating_system.py
+python3 tools/bootstrap_rory_operating_system.py --self-check
 ```
 
-The final line printed by the script contains the private project URL.
+A successful check prints `[ok] validated <count> GraphQL documents`.
 
-## Reconcile or audit
+## Verify the WIP limit
 
-Rerunning the default command reconciles project metadata, fields, and views. It
-does not reapply the seed metadata when the project already exists.
-
-```bash
-python3 tools/bootstrap_rory_operating_system.py
-```
-
-Reapply the initial metadata to the seven seeded MasterAgent issues:
-
-```bash
-python3 tools/bootstrap_rory_operating_system.py --refresh-seed
-```
-
-Check the current three-item WIP limit using read-only queries. The audit
-requires an existing project and accepts the `read:project` OAuth scope.
+This read-only command requires an existing project and accepts the
+`read:project` OAuth scope.
 
 ```bash
 python3 tools/bootstrap_rory_operating_system.py --audit-only
 ```
 
-A successful audit prints `[ok] WIP <count>/3`. It exits with status 2 if the
-project is missing, the project name is ambiguous, or more than three items are
-In Progress. Create a missing project with the default bootstrap command above.
+A successful audit prints `[ok] WIP limit: <count>/3`, the active item titles,
+and the project URL. It exits with status 2 if the project is missing, the
+project name is ambiguous, or more than three items are In Progress. Create a
+missing project with the default bootstrap command above.
 
-## Safety boundaries
+## Useful options
 
-- Bootstrap reconciliation sets the project to private.
-- The script does not modify issue bodies, labels, milestones, assignees,
-  repository files, branches, or pull requests.
-- A project field with the expected name is reused rather than replaced.
-- The script performs no repository deletion, issue closure, merge, release, or
-  external provider action.
-- The WIP assertion fails closed when more than three items are active.
+```text
+--refresh-seed  Replace metadata on the seven seeded issues.
+--no-seed       Reconcile the project structure without seed updates.
+--audit-only    Read the existing project and enforce the three-item WIP limit.
+--self-check    Validate static GraphQL without contacting GitHub.
+--owner LOGIN   Target another personal GitHub account.
+--title TITLE   Use another exact project title.
+```
+
+## Operating rule
+
+An item cannot enter **Now** unless another item leaves first. The bootstrap
+checks the rule after every normal run and exits nonzero when the project has
+more than three active outcomes.

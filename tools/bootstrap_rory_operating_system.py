@@ -16,9 +16,10 @@ from typing import Sequence
 
 from rory_operating_system_data import MAX_WIP, OWNER, TITLE
 from rory_operating_system_github import (
+    GRAPHQL_DOCUMENTS,
     Gh,
     ProjectError,
-    enforce_wip,
+    audit_wip,
     ensure_fields,
     ensure_project,
     ensure_views,
@@ -27,21 +28,68 @@ from rory_operating_system_github import (
     seed_issues,
 )
 
+BootstrapError = ProjectError
+
+
+def validate_graphql_documents() -> None:
+    """Catch truncated static GraphQL before any GitHub operation."""
+
+    pairs = {"}": "{", ")": "(", "]": "["}
+    for index, document in enumerate(GRAPHQL_DOCUMENTS, start=1):
+        stack: list[str] = []
+        in_string = escaped = in_comment = False
+        for character in document:
+            if in_comment:
+                in_comment = character != "\n"
+            elif in_string:
+                if escaped:
+                    escaped = False
+                elif character == "\\":
+                    escaped = True
+                elif character == '"':
+                    in_string = False
+            elif character == "#":
+                in_comment = True
+            elif character == '"':
+                in_string = True
+            elif character in "{([":
+                stack.append(character)
+            elif character in "})]":
+                if not stack or stack.pop() != pairs[character]:
+                    raise BootstrapError(
+                        f"GraphQL document {index} has mismatched delimiters."
+                    )
+        if in_string or stack:
+            raise BootstrapError(
+                f"GraphQL document {index} is truncated or unbalanced."
+            )
+
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     """Parse command-line arguments."""
 
     parser = argparse.ArgumentParser(description=f"Create or reconcile {TITLE!r}.")
     parser.add_argument("--owner", default=OWNER)
+    parser.add_argument("--title", default=TITLE)
     parser.add_argument(
         "--refresh-seed",
         action="store_true",
         help="Reapply the initial metadata to seeded issues in an existing project.",
     )
     parser.add_argument(
+        "--no-seed",
+        action="store_true",
+        help="Reconcile the project structure without adding or updating seeds.",
+    )
+    parser.add_argument(
         "--audit-only",
         action="store_true",
         help="Read the existing project and check its three-item WIP limit.",
+    )
+    parser.add_argument(
+        "--self-check",
+        action="store_true",
+        help="Validate static GraphQL without contacting GitHub.",
     )
     return parser.parse_args(argv)
 
@@ -50,23 +98,26 @@ def main(argv: Sequence[str] | None = None) -> int:
     """Create, seed, or audit the operating project."""
 
     args = parse_args(sys.argv[1:] if argv is None else argv)
+    validate_graphql_documents()
+    if args.self_check:
+        print(f"[ok] validated {len(GRAPHQL_DOCUMENTS)} GraphQL documents")
+        return 0
+
     gh = Gh()
     preflight(gh, args.owner)
     if args.audit_only:
-        project = find_project(gh, args.owner)
-        count = enforce_wip(gh, project.id)
-        print(f"[ok] WIP {count}/{MAX_WIP}")
-        return 0
-
-    project = ensure_project(gh, args.owner)
-    fields = ensure_fields(gh, project.id)
-    if project.created or args.refresh_seed:
-        seed_issues(gh, project.id, fields)
+        project = find_project(gh, args.owner, args.title)
     else:
-        print("[skip] seed metadata already exists; use --refresh-seed to reapply it")
-    ensure_views(gh, project.id, fields)
-    count = enforce_wip(gh, project.id)
-    print(f"[done] WIP {count}/{MAX_WIP}: {project.url}")
+        project = ensure_project(gh, args.owner, args.title)
+        fields = ensure_fields(gh, project.id)
+        if not args.no_seed:
+            seed_issues(gh, project.id, fields, args.refresh_seed)
+        ensure_views(gh, project.id, fields)
+    active = audit_wip(gh, project.id)
+    print(f"[ok] WIP limit: {len(active)}/{MAX_WIP}")
+    for title in active:
+        print(f"  - {title}")
+    print(project.url)
     return 0
 
 

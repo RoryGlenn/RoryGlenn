@@ -165,15 +165,26 @@ query($id: ID!, $after: String) {
             ... on Issue {
               id
               url
+              title
               number
               repository { nameWithOwner }
             }
+            ... on PullRequest { id url title }
+            ... on DraftIssue { id title }
           }
           fieldValues(first: 50) {
             nodes {
               ... on ProjectV2ItemFieldSingleSelectValue {
                 name
                 optionId
+                field { ... on ProjectV2FieldCommon { id name } }
+              }
+              ... on ProjectV2ItemFieldTextValue {
+                text
+                field { ... on ProjectV2FieldCommon { id name } }
+              }
+              ... on ProjectV2ItemFieldDateValue {
+                date
                 field { ... on ProjectV2FieldCommon { id name } }
               }
             }
@@ -209,6 +220,26 @@ mutation($input: UpdateProjectV2ViewInput!) {
 }
 """
 
+GRAPHQL_DOCUMENTS = (
+    ACCOUNT_QUERY,
+    CREATE_PROJECT,
+    UPDATE_PROJECT,
+    STRUCTURE_QUERY,
+    CREATE_FIELD,
+    ISSUE_QUERY,
+    ITEMS_QUERY,
+    ADD_ITEM,
+    UPDATE_ITEM_FIELD,
+    CREATE_VIEW,
+    UPDATE_VIEW,
+)
+
+
+def norm(value: str) -> str:
+    """Normalize case and whitespace for project values."""
+
+    return " ".join(value.casefold().split())
+
 
 def preflight(gh: Gh, owner: str) -> None:
     """Verify authentication, identity, and Projects access."""
@@ -224,14 +255,14 @@ def preflight(gh: Gh, owner: str) -> None:
         ) from exc
     viewer = data.get("viewer")
     login = viewer.get("login") if isinstance(viewer, dict) else None
-    if not isinstance(login, str) or login.casefold() != owner.casefold():
+    if not isinstance(login, str) or norm(login) != norm(owner):
         raise ProjectError(f"gh is authenticated as {login!r}, not {owner!r}.")
     if not isinstance(data.get("user"), dict):
         raise ProjectError(f"GitHub user {owner!r} was not found.")
 
 
 def _project_for_owner(
-    gh: Gh, owner: str
+    gh: Gh, owner: str, title: str
 ) -> tuple[str, dict[str, Any] | None]:
     """Read the owner ID and the project with the exact expected title."""
 
@@ -246,20 +277,20 @@ def _project_for_owner(
     matches = [
         node
         for node in nodes
-        if isinstance(node, dict) and node.get("title") == TITLE
+        if isinstance(node, dict) and node.get("title") == title
     ]
     if len(matches) > 1:
-        raise ProjectError(f"Multiple projects are named {TITLE!r}.")
+        raise ProjectError(f"Multiple projects are named {title!r}.")
     return user["id"], matches[0] if matches else None
 
 
-def find_project(gh: Gh, owner: str) -> ProjectInfo:
+def find_project(gh: Gh, owner: str, title: str = TITLE) -> ProjectInfo:
     """Resolve an existing project using read-only queries."""
 
-    _, project = _project_for_owner(gh, owner)
+    _, project = _project_for_owner(gh, owner, title)
     if project is None:
         raise ProjectError(
-            f"Project {TITLE!r} was not found. "
+            f"Project {title!r} was not found. "
             "Run the bootstrap without --audit-only to create it."
         )
     return ProjectInfo(
@@ -270,20 +301,20 @@ def find_project(gh: Gh, owner: str) -> ProjectInfo:
     )
 
 
-def ensure_project(gh: Gh, owner: str) -> ProjectInfo:
+def ensure_project(gh: Gh, owner: str, title: str = TITLE) -> ProjectInfo:
     """Create or reuse the exact private user-level project."""
 
-    owner_id, project = _project_for_owner(gh, owner)
+    owner_id, project = _project_for_owner(gh, owner, title)
     created = project is None
     if created:
         result = gh.graphql(
             CREATE_PROJECT,
-            {"input": {"ownerId": owner_id, "title": TITLE}},
+            {"input": {"ownerId": owner_id, "title": title}},
         )
         project = result.get("createProjectV2", {}).get("projectV2")
-        print(f"[create] {TITLE}")
+        print(f"[create] {title}")
     else:
-        print(f"[reuse] {TITLE}")
+        print(f"[reuse] {title}")
     if not isinstance(project, dict) or not isinstance(project.get("id"), str):
         raise ProjectError("Could not resolve the project after creation.")
     updated = gh.graphql(
@@ -291,7 +322,7 @@ def ensure_project(gh: Gh, owner: str) -> ProjectInfo:
         {
             "input": {
                 "projectId": project["id"],
-                "title": TITLE,
+                "title": title,
                 "shortDescription": DESCRIPTION,
                 "readme": README,
                 "public": False,
@@ -377,7 +408,10 @@ def _validate_field(existing: FieldInfo, spec: FieldSpec) -> None:
             f"Field {spec.name!r} has type {existing.data_type}, "
             f"expected {spec.data_type}."
         )
-    missing = [option for option in spec.options if option not in existing.options]
+    existing_options = {norm(option) for option in existing.options}
+    missing = [
+        option for option in spec.options if norm(option) not in existing_options
+    ]
     if missing:
         raise ProjectError(
             f"Field {spec.name!r} is missing options: {', '.join(missing)}. "
@@ -458,14 +492,12 @@ def _issue(gh: Gh, number: int) -> dict[str, str]:
 
 
 def _find_option(field: FieldInfo, name: str) -> str:
-    """Resolve one single-select option by exact or case-insensitive name."""
+    """Resolve one single-select option by normalized name."""
 
-    if name in field.options:
-        return field.options[name]
     matches = [
         option_id
         for option_name, option_id in field.options.items()
-        if option_name.casefold() == name.casefold()
+        if norm(option_name) == norm(name)
     ]
     if len(matches) == 1:
         return matches[0]
@@ -513,20 +545,22 @@ def seed_issues(
     gh: Gh,
     project_id: str,
     fields: Mapping[str, FieldInfo],
+    refresh: bool = False,
 ) -> None:
-    """Add and configure the seven initial MasterAgent issues."""
+    """Add missing seeds and fill empty fields, or explicitly refresh them."""
 
     existing = {
-        content["id"]: item["id"]
+        content["url"]: item
         for item in _items(gh, project_id)
         if isinstance(item.get("content"), dict)
-        and isinstance((content := item["content"]).get("id"), str)
+        and isinstance((content := item["content"]).get("url"), str)
         and isinstance(item.get("id"), str)
     }
+    today = date.today()
     for seed in SEEDS:
-        issue = _issue(gh, seed.number)
-        item_id = existing.get(issue["id"])
-        if item_id is None:
+        item = existing.get(seed.url)
+        if item is None:
+            issue = _issue(gh, seed.number)
             result = gh.graphql(
                 ADD_ITEM,
                 {
@@ -539,7 +573,8 @@ def seed_issues(
             item = result.get("addProjectV2ItemById", {}).get("item")
             if not isinstance(item, dict) or not isinstance(item.get("id"), str):
                 raise ProjectError(f"Could not add MasterAgent#{seed.number}.")
-            item_id = item["id"]
+        item_id = item["id"]
+        current = item_values(item)
         values: dict[str, dict[str, str]] = {
             "Status": {"option": seed.status},
             "Outcome": {"text": seed.outcome},
@@ -551,13 +586,15 @@ def seed_issues(
             "WIP owner": {"text": "Rory"},
             "Review date": {
                 "date_value": (
-                    date.today() + timedelta(days=seed.review_days)
+                    today + timedelta(days=seed.review_days)
                 ).isoformat()
             },
         }
         if seed.dependency:
             values["External dependency"] = {"text": seed.dependency}
         for field_name, kwargs in values.items():
+            if not refresh and current.get(field_name):
+                continue
             _set_value(
                 gh,
                 project_id,
@@ -620,38 +657,58 @@ def ensure_views(
         print(f"[set] view: {spec.name}")
 
 
+def item_values(item: Mapping[str, Any]) -> dict[str, str]:
+    """Read populated select, text, and date values by field name."""
+
+    values = item.get("fieldValues")
+    nodes = values.get("nodes") if isinstance(values, dict) else None
+    if not isinstance(nodes, list):
+        return {}
+    result: dict[str, str] = {}
+    for value in nodes:
+        field = value.get("field") if isinstance(value, dict) else None
+        name = field.get("name") if isinstance(field, dict) else None
+        if not isinstance(name, str):
+            continue
+        for key in ("name", "text", "date"):
+            if isinstance(value.get(key), str):
+                result[name] = value[key]
+                break
+    return result
+
+
+def _active_titles(gh: Gh, project_id: str) -> list[str]:
+    """Read the titles of items whose Status is In Progress."""
+
+    active: list[str] = []
+    for item in _items(gh, project_id):
+        if norm(item_values(item).get("Status", "")) != norm("In Progress"):
+            continue
+        content = item.get("content")
+        title = content.get("title") if isinstance(content, dict) else None
+        active.append(str(title or item["id"]))
+    return active
+
+
 def count_wip(gh: Gh, project_id: str) -> int:
     """Count items whose Status is In Progress."""
 
-    count = 0
-    for item in _items(gh, project_id):
-        values = item.get("fieldValues")
-        nodes = values.get("nodes") if isinstance(values, dict) else None
-        if not isinstance(nodes, list):
-            continue
-        for value in nodes:
-            if not isinstance(value, dict):
-                continue
-            field = value.get("field")
-            field_name = field.get("name") if isinstance(field, dict) else None
-            selected = value.get("name")
-            if (
-                field_name == "Status"
-                and isinstance(selected, str)
-                and selected.casefold() == "in progress"
-            ):
-                count += 1
-                break
-    return count
+    return len(_active_titles(gh, project_id))
+
+
+def audit_wip(gh: Gh, project_id: str) -> list[str]:
+    """Return active titles and fail when more than three outcomes are active."""
+
+    active = _active_titles(gh, project_id)
+    if len(active) > MAX_WIP:
+        raise ProjectError(
+            f"WIP limit violated: {len(active)} items are In Progress; "
+            f"maximum is {MAX_WIP}."
+        )
+    return active
 
 
 def enforce_wip(gh: Gh, project_id: str) -> int:
     """Fail when more than three outcomes are active."""
 
-    count = count_wip(gh, project_id)
-    if count > MAX_WIP:
-        raise ProjectError(
-            f"WIP limit violated: {count} items are In Progress; "
-            f"maximum is {MAX_WIP}."
-        )
-    return count
+    return len(audit_wip(gh, project_id))

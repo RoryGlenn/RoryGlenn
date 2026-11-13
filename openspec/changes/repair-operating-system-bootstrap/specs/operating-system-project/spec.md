@@ -20,8 +20,9 @@ and resolved project, item, field, and option identifiers.
 #### Scenario: Existing project reconciliation
 
 - **WHEN** the named project exists and the default command runs
-- **THEN** project metadata, fields, and views are reconciled while existing seed
-  item metadata is retained.
+- **THEN** project metadata, fields, and views are reconciled, missing seed
+  issues and empty configured fields are populated, and populated seed item
+  metadata is retained.
 
 #### Scenario: Existing closed project reconciliation
 
@@ -71,3 +72,48 @@ paginated results, and fail when that count exceeds three.
 
 - **WHEN** the project has four items In Progress across multiple item pages
 - **THEN** the command reports the violation and fails.
+
+### Requirement: Static documents can be checked offline
+
+The command SHALL support `--self-check` to validate the delimiters of all static
+GraphQL documents and report the count before GitHub access is initialized.
+Normal commands SHALL perform that validation before GitHub operations.
+
+#### Scenario: Offline self-check
+
+- **WHEN** `--self-check` runs with GitHub CLI unavailable
+- **THEN** valid static documents produce a successful count with zero GitHub
+  operations.
+
+#### Scenario: Truncated document
+
+- **WHEN** a static GraphQL document is truncated and a command runs
+- **THEN** the command fails before GitHub access is initialized.
+
+### Requirement: Command options select reconciliation behavior
+
+The command SHALL accept an exact project title through `--title` and omit seed
+issue and item-field mutations when `--no-seed` is supplied.
+
+#### Scenario: Custom title
+
+- **WHEN** a command supplies `--title`
+- **THEN** project lookup, creation, and metadata reconciliation use that exact
+  title.
+
+#### Scenario: Structure-only reconciliation
+
+- **WHEN** the command runs with `--no-seed`
+- **THEN** it reconciles project metadata, fields, and views, and audits WIP
+  without seed issue or item-field mutations.
+
+### Requirement: Project value matching tolerates formatting
+
+Single-select option and active Status comparisons SHALL ignore case and
+repeated whitespace while requiring a unique matching option for updates.
+
+#### Scenario: Formatted option names
+
+- **WHEN** configured options differ only by case or repeated whitespace
+- **THEN** seed updates resolve the existing option IDs and the WIP audit counts
+  active items correctly.

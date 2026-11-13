@@ -28,3 +28,17 @@
 ## Workflow follow-up
 
 - Keep independent review, verification, and publication results with the PR.
+
+## 4. Reconcile current main
+
+- [x] 4.1 Merge current main and resolve the two add/add conflicts, verified by
+  an empty unmerged-file list and a pending merge parent at the inspected tip.
+- [x] 4.2 Preserve offline self-check, custom titles, seed skipping, normalized
+  options, missing metadata filling, and active-item output with regression tests.
+- [x] 4.3 Combine the runbook with the current command contract and validate its
+  offline examples, Markdown, and OpenSpec.
+- [x] 4.4 Extend bootstrap CI to cover its modules and tests, then run bootstrap
+  tests, Python compilation, self-check, incoming engineering-system validation,
+  and whitespace checks on the resolved state.
+- [x] 4.5 Inspect the resolved diff and hand the snapshot to the parent for
+  independent re-review and verification before committing the merge.

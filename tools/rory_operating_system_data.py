@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import textwrap
 from dataclasses import dataclass
 from typing import Final
 
@@ -13,36 +12,22 @@ DESCRIPTION: Final = (
     "Cross-repository operating system for limiting work in progress, "
     "forcing validation, and measuring real user impact."
 )
-README: Final = textwrap.dedent(
-    """
-    # Rory Operating System
+README: Final = """# Rory Operating System
 
-    This project controls AI-amplified work across repositories. It optimizes
-    for verified outcomes, not the volume of code, issues, documents, or agents.
+This project controls AI-amplified work across repositories. It optimizes for
+verified outcomes rather than the volume of code, issues, documents, or agents.
 
-    ## Rules
+## Rules
 
-    1. **Now contains at most three outcomes.** A fourth item cannot enter
-       `In Progress` until another item leaves.
-    2. Every item states its **Outcome** and next falsifiable
-       **Next validation**.
-    3. Evidence advances through `Idea -> Mocked -> Integrated -> Real
-       environment -> Real user`.
-    4. Technically finished is not done while the user outcome is unverified.
-    5. Review externally blocked work and kill candidates every week.
-    6. Prefer one complete workflow over a larger capability count.
-
-    ## Stages
-
-    - **Diagnose** — identify the outcome, constraint, and smallest test.
-    - **Build** — implement only what the test requires.
-    - **Validate** — test in the environment or with the user that matters.
-    - **Ship** — deliver the validated capability.
-    - **Measure** — observe adoption, reliability, time saved, and impact.
-    - **Maintain** — keep a proven capability healthy.
-    - **Kill** — remove, archive, or stop investing.
-    """
-).strip()
+1. **Now contains at most three outcomes.** A fourth item cannot enter
+   `In Progress` until another leaves.
+2. Every item states an **Outcome** and a falsifiable **Next validation**.
+3. Evidence advances through `Idea -> Mocked -> Integrated -> Real environment
+   -> Real user`.
+4. Technical completion is not completion while user impact is unverified.
+5. Review blocked work and kill candidates weekly.
+6. Prefer one complete workflow over broader capability count.
+"""
 
 
 @dataclass(frozen=True)
@@ -151,7 +136,7 @@ SEEDS: Final = (
         "Validate",
         "Integrated",
         "Provide protected credentials and stable non-production fixtures for every provider required by the Tier-1 workflow.",
-        "Run exact Tier-1 native-connector cases with independently verified outcomes and cleanup.",
+        "Run the exact Tier-1 native-connector cases with independently verified outcomes and cleanup.",
         21,
         "Atlassian, Bitbucket, and Microsoft 365 test identities, permissions, and fixtures.",
     ),
