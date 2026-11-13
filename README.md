@@ -22,7 +22,6 @@ I'm a software engineer based in New York City. I focus on workflows that are sl
 
 | Project | What it does |
 | --- | --- |
-| [MasterAgent](https://github.com/RoryGlenn/MasterAgent) | Governed automation across developer and enterprise systems with explicit authority, verification, and audit boundaries. |
 | [LineLight](https://github.com/RoryGlenn/LineLight) | Private-first reading with synchronized highlighting, offline narration, PDFs, and audiobook workflows. |
 | [commitment-issues](https://github.com/RoryGlenn/commitment-issues) | Advisory Git guardrails that catch expensive mistakes before commits and pushes. |
 
@@ -52,6 +51,7 @@ npx --no-install commitment-issues init --dry-run
 
 | Project | What it demonstrates |
 | --- | --- |
+| [MasterAgent](https://github.com/RoryGlenn/MasterAgent) (archived) | Permission checks, verification, and audit trails for automation across developer and enterprise systems. |
 | [Price Prophet](https://github.com/RoryGlenn/PriceProphet) | React, TypeScript, market-data simulation, and a deployed GitHub Pages experience. |
 | [YouTube ClickBait Filter](https://github.com/RoryGlenn/YoutubeClickBaitFilter) | A privacy-first Chrome extension with local content filtering. |
 | [SnoopLog](https://github.com/RoryGlenn/SnoopLog) | Python decorators and runtime instrumentation for debugging and observability. |
